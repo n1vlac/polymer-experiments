@@ -110,6 +110,18 @@ re-throw the error if uncaught errors on the console are desired.
     }
   };
 
+  var renderStatusAfterNextRender = Polymer.RenderStatus.afterNextRender;
+  Polymer.RenderStatus.afterNextRender = function(element, fn, args) {
+    var safeFn = function() {
+      try {
+        fn.apply(this, arguments);
+      } catch (e) {
+        onError(e);
+      }
+    };
+    renderStatusAfterNextRender.call(Polymer.RenderStatus, element, safeFn, args);
+  };
+
   var polymerWarn = Polymer.Base._warn;
   Polymer.Base._warn = function(msg) {
     polymerWarn.apply(Polymer.Base, arguments);
